@@ -13,6 +13,7 @@
 		258CEA371C522E7400BBBBFA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 258CEA351C522E7400BBBBFA /* Main.storyboard */; };
 		258CEA391C522E7400BBBBFA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 258CEA381C522E7400BBBBFA /* Assets.xcassets */; };
 		258CEA3C1C522E7400BBBBFA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 258CEA3A1C522E7400BBBBFA /* LaunchScreen.storyboard */; };
+		258CEA461C522EF500BBBBFA /* SCCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 258CEA451C522EF500BBBBFA /* SCCollectionViewFlowLayout.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,8 @@
 		258CEA381C522E7400BBBBFA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		258CEA3B1C522E7400BBBBFA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		258CEA3D1C522E7400BBBBFA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		258CEA441C522EF500BBBBFA /* SCCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		258CEA451C522EF500BBBBFA /* SCCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCCollectionViewFlowLayout.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,7 @@
 		258CEA2B1C522E7400BBBBFA /* SCCollectionViewFlowLayout */ = {
 			isa = PBXGroup;
 			children = (
+				258CEA431C522E9400BBBBFA /* SCCollectionViewFlowLayout */,
 				258CEA2F1C522E7400BBBBFA /* AppDelegate.h */,
 				258CEA301C522E7400BBBBFA /* AppDelegate.m */,
 				258CEA321C522E7400BBBBFA /* ViewController.h */,
@@ -77,6 +81,15 @@
 				258CEA2D1C522E7400BBBBFA /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		258CEA431C522E9400BBBBFA /* SCCollectionViewFlowLayout */ = {
+			isa = PBXGroup;
+			children = (
+				258CEA441C522EF500BBBBFA /* SCCollectionViewFlowLayout.h */,
+				258CEA451C522EF500BBBBFA /* SCCollectionViewFlowLayout.m */,
+			);
+			path = SCCollectionViewFlowLayout;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -151,6 +164,7 @@
 			files = (
 				258CEA341C522E7400BBBBFA /* ViewController.m in Sources */,
 				258CEA311C522E7400BBBBFA /* AppDelegate.m in Sources */,
+				258CEA461C522EF500BBBBFA /* SCCollectionViewFlowLayout.m in Sources */,
 				258CEA2E1C522E7400BBBBFA /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
