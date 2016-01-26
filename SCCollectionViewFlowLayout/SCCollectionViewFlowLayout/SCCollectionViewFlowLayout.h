@@ -23,6 +23,10 @@ extern NSString *const SCCollectionElementKindSectionFooter;
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForHeaderInSection:(NSInteger)section;
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForFooterInSection:(NSInteger)section;
 
+// PinToVisibleBounds
+- (BOOL)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout pinToVisibleBoundsForHeaderInSection:(NSInteger)section;
+- (void)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout didChangePinHeaderStatus:(BOOL)isPinning inSection:(NSInteger)section;
+
 @end
 
 @interface SCCollectionViewFlowLayout : UICollectionViewLayout
@@ -35,5 +39,6 @@ extern NSString *const SCCollectionElementKindSectionFooter;
 @property (nonatomic, assign) CGFloat footerReferenceHeight;
 @property (nonatomic, assign) UIEdgeInsets headerInset;
 @property (nonatomic, assign) UIEdgeInsets footerInset;
+@property (nonatomic, assign) BOOL sectionHeadersPinToVisibleBounds;
 
 @end
