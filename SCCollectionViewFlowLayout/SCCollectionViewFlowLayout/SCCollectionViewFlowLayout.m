@@ -8,14 +8,15 @@
 
 #import "SCCollectionViewFlowLayout.h"
 
-static const CGSize kSCDefaultItemSize               = {50.0, 50.0};
-static const CGFloat kSCDefaultLineSpacing           = 0.0;
-static const CGFloat kSCDefaultInteritemSpacing      = 0.0;
-static const UIEdgeInsets kSCDefaultSectionInset     = {0.0, 0.0, 0.0, 0.0};
-static const CGFloat kSCDefaultHeaderReferenceHeight = 0.0;
-static const CGFloat kSCDefaultFooterReferenceHeight = 0.0;
-static const UIEdgeInsets kSCDefaultHeaderInset      = {0.0, 0.0, 0.0, 0.0};
-static const UIEdgeInsets kSCDefaultFooterInset      = {0.0, 0.0, 0.0, 0.0};
+static const CGSize kDefaultItemSize               = {50.0, 50.0};
+static const CGFloat kDefaultLineSpacing           = 0.0;
+static const CGFloat kDefaultInteritemSpacing      = 0.0;
+static const UIEdgeInsets kDefaultSectionInset     = {0.0, 0.0, 0.0, 0.0};
+static const CGFloat kDefaultHeaderReferenceHeight = 0.0;
+static const CGFloat kDefaultFooterReferenceHeight = 0.0;
+static const UIEdgeInsets kDefaultHeaderInset      = {0.0, 0.0, 0.0, 0.0};
+static const UIEdgeInsets kDefaultFooterInset      = {0.0, 0.0, 0.0, 0.0};
+static const NSInteger kUnionCount = 20;
 
 NSString *const SCCollectionElementKindSectionHeader = @"SCCollectionElementKindSectionHeader";
 NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKindSectionFooter";
@@ -25,6 +26,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
 @property (nonatomic, weak) id<SCCollectionViewDelegateFlowLayout> delegate;
 @property (nonatomic, assign) CGFloat y;
 @property (nonatomic, strong) NSMutableArray *attributesArray;
+@property (nonatomic, strong) NSMutableArray *unionRects;
 
 @end
 
@@ -47,11 +49,13 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
         self.delegate = (id<SCCollectionViewDelegateFlowLayout>)self.collectionView.delegate;
         self.y = 0.0;
         self.attributesArray = [NSMutableArray array];
+        self.unionRects = [NSMutableArray array];
         for (NSUInteger section = 0; section < numOfSections; section++) {
             [self layoutHeadersInSection:section];
             [self layoutItemsInSection:section];
             [self layoutFootersInSection:section];
         }
+        [self uniteRects];
     }
 }
 
@@ -61,7 +65,22 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
 
 - (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect {
     NSMutableArray *mutableArray = [NSMutableArray array];
-    for (UICollectionViewLayoutAttributes *attributes in self.attributesArray) {
+    NSInteger i;
+    NSInteger begin = 0, end = self.unionRects.count;
+    for (i = 0; i < self.unionRects.count; i++) {
+        if (CGRectIntersectsRect(rect, [self.unionRects[i] CGRectValue])) {
+            begin = i * kUnionCount;
+            break;
+        }
+    }
+    for (i = self.unionRects.count - 1; i >= 0; i--) {
+        if (CGRectIntersectsRect(rect, [self.unionRects[i] CGRectValue])) {
+            end = MIN((i + 1) * kUnionCount, self.attributesArray.count);
+            break;
+        }
+    }
+    for (i = begin; i < end; i++) {
+        UICollectionViewLayoutAttributes *attributes = self.attributesArray[i];
         if (CGRectIntersectsRect(rect, attributes.frame)) {
             [mutableArray addObject:attributes];
         }
@@ -148,6 +167,20 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     }
 }
 
+- (void)uniteRects {
+    NSInteger idx = 0;
+    NSInteger count = self.attributesArray.count;
+    while (idx < count) {
+        CGRect unionRect = ((UICollectionViewLayoutAttributes *)self.attributesArray[idx]).frame;
+        NSInteger rectEndIndex = MIN(idx + kUnionCount, count);
+        for (NSInteger i = idx + 1; i < rectEndIndex; i++) {
+            unionRect = CGRectUnion(unionRect, ((UICollectionViewLayoutAttributes *)self.attributesArray[i]).frame);
+        }
+        idx = rectEndIndex;
+        [self.unionRects addObject:[NSValue valueWithCGRect:unionRect]];
+    }
+}
+
 #pragma mark - Getter
 
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -156,7 +189,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     } else if (!CGSizeEqualToSize(self.itemSize, CGSizeZero)) {
         return self.itemSize;
     } else {
-        return kSCDefaultItemSize;
+        return kDefaultItemSize;
     }
 }
 
@@ -166,7 +199,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     } else if (self.lineSpacing) {
         return self.lineSpacing;
     } else {
-        return kSCDefaultLineSpacing;
+        return kDefaultLineSpacing;
     }
 }
 
@@ -176,7 +209,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     } else if (self.interitemSpacing) {
         return self.interitemSpacing;
     } else {
-        return kSCDefaultInteritemSpacing;
+        return kDefaultInteritemSpacing;
     }
 }
 
@@ -186,7 +219,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     } else if (!UIEdgeInsetsEqualToEdgeInsets(self.sectionInset, UIEdgeInsetsZero)) {
         return self.sectionInset;
     } else {
-        return kSCDefaultSectionInset;
+        return kDefaultSectionInset;
     }
 }
 
@@ -196,7 +229,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     } else if (self.headerReferenceHeight) {
         return self.headerReferenceHeight;
     } else {
-        return kSCDefaultHeaderReferenceHeight;
+        return kDefaultHeaderReferenceHeight;
     }
 }
 
@@ -206,7 +239,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     } else if (self.footerReferenceHeight) {
         return self.footerReferenceHeight;
     } else {
-        return kSCDefaultFooterReferenceHeight;
+        return kDefaultFooterReferenceHeight;
     }
 }
 
@@ -216,7 +249,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     } else if (!UIEdgeInsetsEqualToEdgeInsets(self.headerInset, UIEdgeInsetsZero)) {
         return self.headerInset;
     } else {
-        return kSCDefaultHeaderInset;
+        return kDefaultHeaderInset;
     }
 }
 
@@ -226,7 +259,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     } else if (!UIEdgeInsetsEqualToEdgeInsets(self.footerInset, UIEdgeInsetsZero)) {
         return self.footerInset;
     } else {
-        return kSCDefaultFooterInset;
+        return kDefaultFooterInset;
     }
 }
 
