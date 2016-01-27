@@ -40,7 +40,7 @@ static NSString * const reusableViewId = @"ReusableView";
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self.collectionView reloadData];
-    });;    
+    });;
 }
 
 #pragma mark UICollectionViewDataSource
@@ -50,20 +50,7 @@ static NSString * const reusableViewId = @"ReusableView";
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    switch (section) {
-        case 0:
-            return 15;
-            break;
-        case 1:
-            return 22;
-            break;
-        case 2:
-            return 70;
-            break;
-        default:
-            return 20;
-            break;
-    }
+    return 30;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -75,26 +62,13 @@ static NSString * const reusableViewId = @"ReusableView";
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     if ([kind isEqualToString:SCCollectionElementKindSectionHeader]) {
         SCCollectionReusableView *header = [collectionView dequeueReusableSupplementaryViewOfKind:SCCollectionElementKindSectionHeader withReuseIdentifier:reusableViewId forIndexPath:indexPath];
-        switch (indexPath.section) {
-            case 0:
-                header.backgroundColor = [UIColor yellowColor];
-                break;
-            case 1:
-                header.backgroundColor = [UIColor greenColor];
-                break;
-            case 2:
-                header.backgroundColor = [UIColor purpleColor];
-                break;
-            default:
-                header.backgroundColor = [UIColor lightGrayColor];
-                break;
-        }
+        header.backgroundColor = [UIColor lightGrayColor];
         header.titleLabel.text = [NSString stringWithFormat:@"Header%zd",indexPath.section];
         return header;
     } else if ([kind isEqualToString:SCCollectionElementKindSectionFooter]) {
         SCCollectionReusableView *footer = [collectionView dequeueReusableSupplementaryViewOfKind:SCCollectionElementKindSectionFooter withReuseIdentifier:reusableViewId forIndexPath:indexPath];
-        footer.backgroundColor = [UIColor redColor];
-        footer.titleLabel.text = @"Footer";
+        footer.backgroundColor = [UIColor purpleColor];
+        footer.titleLabel.text = [NSString stringWithFormat:@"Feader%zd",indexPath.section];
         return footer;
     } else {
         return nil;
@@ -104,7 +78,7 @@ static NSString * const reusableViewId = @"ReusableView";
 #pragma mark - SCCollectionViewFlowLayoutDelegate
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(40, 40);
+    return CGSizeMake(80+indexPath.row, 60);
 }
 
 @end

@@ -39,6 +39,8 @@ extern NSString *const SCCollectionElementKindSectionFooter;
 @property (nonatomic, assign) CGFloat footerReferenceHeight;
 @property (nonatomic, assign) UIEdgeInsets headerInset;
 @property (nonatomic, assign) UIEdgeInsets footerInset;
+
+// PinToVisibleBounds
 @property (nonatomic, assign) BOOL sectionHeadersPinToVisibleBounds;
 
 @end

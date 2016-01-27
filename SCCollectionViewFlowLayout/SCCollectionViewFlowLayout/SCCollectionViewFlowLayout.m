@@ -48,16 +48,16 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
 @interface SCCollectionViewFlowLayout()
 
 @property (nonatomic, weak) id<SCCollectionViewDelegateFlowLayout> delegate;
-@property (nonatomic, assign) CGFloat y;
+@property (nonatomic, assign) CGFloat contentHeight;
+@property (nonatomic, assign) CGFloat contentWidth;
 @property (nonatomic, strong) NSMutableArray *attributesArray;
 @property (nonatomic, strong) NSMutableArray *unionRects;
-@property (nonatomic, assign) CGFloat contentWidth;
 
 // PinToVisibleBounds
 @property (nonatomic, strong) NSMutableArray *pinHeaderArray;
 @property (nonatomic, strong) NSMutableArray *showingPinHeaderArray;
 @property (nonatomic, strong) NSMutableArray *showingAttributesArray;
-@property (nonatomic, assign, getter=isPinning) BOOL pinning;
+@property (nonatomic, assign, getter=isUpdatingPinHeader) BOOL updatingPinHeader;
 @property (nonatomic, assign) CGRect preRect;
 
 @end
@@ -70,7 +70,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     if (CGRectGetWidth(newBounds) != CGRectGetWidth(self.collectionView.bounds)) {
         return YES;
     } else if (self.pinHeaderArray.count) {
-        self.pinning = YES;
+        self.updatingPinHeader = YES;
         [self.showingPinHeaderArray removeAllObjects];
         for (SCPinHeader *pinHeader in self.pinHeaderArray) {
             if (CGRectIntersectsRect(pinHeader.rect, newBounds)) {
@@ -90,9 +90,9 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     [super prepareLayout];
     
     NSInteger numOfSections = [self.collectionView numberOfSections];
-    if (numOfSections && !self.isPinning) {
+    if (numOfSections && !self.isUpdatingPinHeader) {
         self.delegate = (id<SCCollectionViewDelegateFlowLayout>)self.collectionView.delegate;
-        self.y = 0.0;
+        self.contentHeight = 0.0;
         self.contentWidth = [UIScreen mainScreen].bounds.size.width;
         self.attributesArray = [NSMutableArray array];
         self.unionRects = [NSMutableArray array];
@@ -109,11 +109,11 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
 }
 
 - (CGSize)collectionViewContentSize {
-    CGSize size = CGSizeMake(self.contentWidth, self.y);
+    CGSize size = CGSizeMake(self.contentWidth, self.contentHeight);
     if (self.pinHeaderArray.count) {
         SCPinHeader *lastPinHeader = self.pinHeaderArray.lastObject;
-        lastPinHeader.endY = self.y - lastPinHeader.attributes.frame.size.height;
-        lastPinHeader.rect = CGRectMake(0, lastPinHeader.startY, self.collectionView.frame.size.width, self.y - lastPinHeader.startY);
+        lastPinHeader.endY = self.contentHeight - lastPinHeader.attributes.frame.size.height;
+        lastPinHeader.rect = CGRectMake(0, lastPinHeader.startY, self.collectionView.frame.size.width, self.contentHeight - lastPinHeader.startY);
         if (CGRectIntersectsRect(lastPinHeader.rect, CGRectMake(0, self.collectionView.contentOffset.y, self.collectionView.frame.size.width, self.collectionView.frame.size.height))) {
             [self layoutPinHeader:lastPinHeader offsetY:self.collectionView.contentOffset.y];
             [self.showingPinHeaderArray addObject:lastPinHeader.attributes];
@@ -127,7 +127,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     if (self.showingPinHeaderArray.count) {
         [mutableArray addObjectsFromArray:self.showingPinHeaderArray];
     }
-    if (!CGRectEqualToRect(self.preRect, rect) || !self.isPinning) {
+    if (!CGRectEqualToRect(self.preRect, rect) || !self.isUpdatingPinHeader) {
         self.preRect = rect;
         [self.showingAttributesArray removeAllObjects];
         NSInteger i;
@@ -152,7 +152,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
         }
     }
     [mutableArray addObjectsFromArray:self.showingAttributesArray];
-    self.pinning = NO;
+    self.updatingPinHeader = NO;
     return [mutableArray copy];
 }
 
@@ -165,11 +165,11 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
         UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:SCCollectionElementKindSectionHeader withIndexPath:indexPath];
         UIEdgeInsets inset = [self insetForHeaderInSection:section];
         CGFloat x = inset.left;
-        CGFloat y = self.y + inset.top;
+        CGFloat y = self.contentHeight + inset.top;
         CGFloat w = self.contentWidth - inset.left - inset.right;
         attributes.frame = CGRectMake(x, y, w, h);
         attributes.zIndex = 10;
-        self.y = y + h + inset.bottom;
+        self.contentHeight = y + h + inset.bottom;
         
         if ([self pinToHeaderVisibleBoundsInSection:section]) {
             attributes.zIndex = 20;
@@ -198,7 +198,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
         CGFloat lineSpacing = [self lineSpacingForSectionAtIndex:section];
         CGFloat interitemSpacing = [self interitemSpacingForSectionAtIndex:section];
         UIEdgeInsets inset = [self insetForSectionAtIndex:section];
-        self.y += inset.top;
+        self.contentHeight += inset.top;
         for (NSInteger item = 0; item < numberOfItems; item++) {
             NSIndexPath *indexPath = [NSIndexPath indexPathForItem:item inSection:section];
             UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
@@ -207,12 +207,12 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
                 attributes.size = size;
                 CGRect frame = attributes.frame;
                 frame.origin.x = inset.left;
-                frame.origin.y = self.y;
+                frame.origin.y = self.contentHeight;
                 attributes.frame = frame;
-                self.y = CGRectGetMaxY(attributes.frame);
+                self.contentHeight = CGRectGetMaxY(attributes.frame);
             } else {
                 UICollectionViewLayoutAttributes *prevAttributes = self.attributesArray.lastObject;
-                NSInteger x = CGRectGetMaxX(prevAttributes.frame);
+                CGFloat x = CGRectGetMaxX(prevAttributes.frame);
                 if (x + interitemSpacing + size.width <= self.contentWidth - inset.right) {
                     attributes.size = size;
                     CGRect frame = attributes.frame;
@@ -220,20 +220,20 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
                     frame.origin.y = prevAttributes.frame.origin.y;
                     attributes.frame = frame;
                     if (size.height > prevAttributes.size.height) {
-                        self.y = CGRectGetMaxY(attributes.frame);
+                        self.contentHeight = CGRectGetMaxY(attributes.frame);
                     }
                 } else {
                     attributes.size = size;
                     CGRect frame = attributes.frame;
                     frame.origin.x = inset.left;
-                    frame.origin.y = self.y + lineSpacing;
+                    frame.origin.y = self.contentHeight + lineSpacing;
                     attributes.frame = frame;
-                    self.y = CGRectGetMaxY(attributes.frame);
+                    self.contentHeight = CGRectGetMaxY(attributes.frame);
                 }
             }
             [self.attributesArray addObject:attributes];
         }
-        self.y += inset.bottom;
+        self.contentHeight += inset.bottom;
     }
 }
 
@@ -244,11 +244,11 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
         UICollectionViewLayoutAttributes *attributes = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:SCCollectionElementKindSectionFooter withIndexPath:indexPath];
         UIEdgeInsets inset = [self insetForFooterInSection:section];
         CGFloat x = inset.left;
-        CGFloat y = self.y + inset.top;
+        CGFloat y = self.contentHeight + inset.top;
         CGFloat w = self.contentWidth - inset.left - inset.right;
         attributes.frame = CGRectMake(x, y, w, h);
         attributes.zIndex = 10;
-        self.y = y + h + inset.bottom;
+        self.contentHeight = y + h + inset.bottom;
         [self.attributesArray addObject:attributes];
     }
 }
