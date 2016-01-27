@@ -37,6 +37,10 @@ static NSString * const reusableViewId = @"ReusableView";
     [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:cellId];
     [self.collectionView registerNib:[UINib nibWithNibName:@"SCCollectionReusableView" bundle:nil] forSupplementaryViewOfKind:SCCollectionElementKindSectionHeader withReuseIdentifier:reusableViewId];
     [self.collectionView registerNib:[UINib nibWithNibName:@"SCCollectionReusableView" bundle:nil] forSupplementaryViewOfKind:SCCollectionElementKindSectionFooter withReuseIdentifier:reusableViewId];
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.collectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:1000] atScrollPosition:UICollectionViewScrollPositionNone animated:YES];
+    });;
 }
 
 #pragma mark UICollectionViewDataSource
