@@ -22,6 +22,8 @@ extern NSString *const SCCollectionElementKindSectionFooter;
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceHeightForFooterInSection:(NSInteger)section;
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForHeaderInSection:(NSInteger)section;
 - (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetForFooterInSection:(NSInteger)section;
+- (BOOL)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout shouldShowBackgroundViewInSection:(NSInteger)section;
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout insetsForBackgroundViewInSection:(NSInteger)section;
 
 // PinToVisibleBounds
 - (BOOL)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout pinToVisibleBoundsForHeaderInSection:(NSInteger)section;
@@ -39,6 +41,8 @@ extern NSString *const SCCollectionElementKindSectionFooter;
 @property (nonatomic, assign) CGFloat footerReferenceHeight;
 @property (nonatomic, assign) UIEdgeInsets headerInset;
 @property (nonatomic, assign) UIEdgeInsets footerInset;
+@property (nonatomic, assign) BOOL shouldShowBackground;
+@property (nonatomic, assign) UIEdgeInsets backgroundInset;
 
 // PinToVisibleBounds
 @property (nonatomic, assign) BOOL sectionHeadersPinToVisibleBounds;

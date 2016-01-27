@@ -17,10 +17,14 @@ static const CGFloat kDefaultFooterReferenceHeight = 0.0;
 static const UIEdgeInsets kDefaultHeaderInset      = {0.0, 0.0, 0.0, 0.0};
 static const UIEdgeInsets kDefaultFooterInset      = {0.0, 0.0, 0.0, 0.0};
 static const BOOL kDefaultPinToVisibleBounds       = NO;
+static const BOOL kDefaultShouldShowBackgroundView = NO;
+static const UIEdgeInsets kDefaultBackgroundInsets = {0, 0, 0, 0};
+
 static const NSInteger kUnionCount = 20;
 
 NSString *const SCCollectionElementKindSectionHeader = @"SCCollectionElementKindSectionHeader";
 NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKindSectionFooter";
+NSString *const SCCollectionElementKindSectionBackgroundView = @"SCCollectionElementKindSectionBackgroundView";
 
 @interface SCPinHeader : NSObject
 
@@ -45,6 +49,21 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
 
 @end
 
+@interface SCSectionBackgroundView : UICollectionReusableView
+
+@end
+
+@implementation SCSectionBackgroundView
+
+- (instancetype)initWithFrame:(CGRect)frame {
+    if (self = [super initWithFrame:frame]) {
+        self.backgroundColor = [UIColor redColor];
+    }
+    return self;
+}
+
+@end
+
 @interface SCCollectionViewFlowLayout()
 
 @property (nonatomic, weak) id<SCCollectionViewDelegateFlowLayout> delegate;
@@ -54,6 +73,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
 @property (nonatomic, strong) NSMutableArray *allShowingItems;
 @property (nonatomic, strong) NSMutableArray *headers;
 @property (nonatomic, strong) NSMutableArray *sectionItems;
+@property (nonatomic, strong) NSMutableArray *backgroundItems;
 @property (nonatomic, strong) NSMutableArray *footers;
 @property (nonatomic, strong) NSMutableArray *unionRects;
 
@@ -95,12 +115,14 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     NSInteger numOfSections = [self.collectionView numberOfSections];
     if (numOfSections && !self.isUpdatingPinHeader) {
         self.delegate = (id<SCCollectionViewDelegateFlowLayout>)self.collectionView.delegate;
+        [self registerClass:[SCSectionBackgroundView class] forDecorationViewOfKind:SCCollectionElementKindSectionBackgroundView];
         self.contentHeight = 0.0;
         self.contentWidth = [UIScreen mainScreen].bounds.size.width;
         self.allItems = [NSMutableArray array];
         self.allShowingItems = [NSMutableArray array];
         self.headers = [NSMutableArray array];
         self.sectionItems = [NSMutableArray array];
+        self.backgroundItems = [NSMutableArray array];
         self.footers = [NSMutableArray array];
         self.unionRects = [NSMutableArray array];
         self.pinHeaders = [NSMutableArray array];
@@ -173,7 +195,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
     } else if ([elementKind isEqualToString:SCCollectionElementKindSectionFooter]){
         return self.footers[indexPath.section];
     } else {
-        return nil;
+        return [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:elementKind withIndexPath:indexPath];
     }
 }
 
@@ -217,6 +239,7 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
 - (void)layoutItemsInSection:(NSInteger)section {
     NSInteger numberOfItems = [self.collectionView numberOfItemsInSection:section];
     if (numberOfItems) {
+        CGFloat startY = self.contentHeight;
         CGFloat lineSpacing = [self lineSpacingForSectionAtIndex:section];
         CGFloat interitemSpacing = [self interitemSpacingForSectionAtIndex:section];
         UIEdgeInsets inset = [self insetForSectionAtIndex:section];
@@ -259,6 +282,19 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
         }
         [self.sectionItems addObject:mutableArray];
         self.contentHeight += inset.bottom;
+        CGFloat endY = self.contentHeight;
+        
+        if ([self needsBackgroundViewInSection:section]) {
+            UICollectionViewLayoutAttributes *attr = [UICollectionViewLayoutAttributes layoutAttributesForDecorationViewOfKind:SCCollectionElementKindSectionBackgroundView withIndexPath:[NSIndexPath indexPathForItem:0 inSection:section]];
+            UIEdgeInsets insets = [self insetsForBackgroundViewInSection:section];
+            CGFloat x = insets.left;
+            CGFloat y = startY + insets.top;
+            CGFloat w = [UIScreen mainScreen].bounds.size.width - insets.left - insets.right;
+            CGFloat h = endY - startY - insets.top - insets.bottom;
+            attr.frame = CGRectMake(x, y, w, h);
+            attr.zIndex = -1;
+            [self.allItems addObject:attr];
+        }
     }
 }
 
@@ -403,6 +439,24 @@ NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKind
         return self.sectionHeadersPinToVisibleBounds;
     }
     return kDefaultPinToVisibleBounds;
+}
+
+- (BOOL)needsBackgroundViewInSection:(NSInteger)section {
+    if ([self.delegate respondsToSelector:@selector(collectionView:layout:shouldShowBackgroundViewInSection:)]) {
+        return [self.delegate collectionView:self.collectionView layout:self shouldShowBackgroundViewInSection:section];
+    } else if (self.shouldShowBackground) {
+        return self.shouldShowBackground;
+    }
+    return kDefaultShouldShowBackgroundView;
+}
+
+- (UIEdgeInsets)insetsForBackgroundViewInSection:(NSInteger)section {
+    if ([self.delegate respondsToSelector:@selector(collectionView:layout:insetsForBackgroundViewInSection:)]) {
+        return [self.delegate collectionView:self.collectionView layout:self insetsForBackgroundViewInSection:section];
+    } else if (!UIEdgeInsetsEqualToEdgeInsets(self.backgroundInset, UIEdgeInsetsZero)) {
+        return self.backgroundInset;
+    }
+    return kDefaultBackgroundInsets;
 }
 
 @end
