@@ -7,62 +7,25 @@
 //
 
 #import "SCCollectionViewFlowLayout.h"
+#import "SCPinHeader.h"
+#import "SCSectionBackgroundView.h"
 
-static const CGSize kDefaultItemSize               = {50.0, 50.0};
-static const CGFloat kDefaultLineSpacing           = 0.0;
-static const CGFloat kDefaultInteritemSpacing      = 0.0;
-static const UIEdgeInsets kDefaultSectionInset     = {0.0, 0.0, 0.0, 0.0};
-static const CGFloat kDefaultHeaderReferenceHeight = 0.0;
-static const CGFloat kDefaultFooterReferenceHeight = 0.0;
-static const UIEdgeInsets kDefaultHeaderInset      = {0.0, 0.0, 0.0, 0.0};
-static const UIEdgeInsets kDefaultFooterInset      = {0.0, 0.0, 0.0, 0.0};
-static const BOOL kDefaultPinToVisibleBounds       = NO;
-static const BOOL kDefaultShouldShowBackgroundView = NO;
-static const UIEdgeInsets kDefaultBackgroundInsets = {0, 0, 0, 0};
-
+static const CGSize kDefaultItemSize                    = {50, 50};
+static const CGFloat kDefaultLineSpacing                = 5;
+static const CGFloat kDefaultInteritemSpacing           = 5;
+static const UIEdgeInsets kDefaultSectionInset          = {0, 0, 0, 0};
+static const CGFloat kDefaultHeaderReferenceHeight      = 0.0;
+static const CGFloat kDefaultFooterReferenceHeight      = 0.0;
+static const UIEdgeInsets kDefaultHeaderInset           = {0, 0, 0, 0};
+static const UIEdgeInsets kDefaultFooterInset           = {0, 0, 0, 0};
+static const BOOL kDefaultPinToVisibleBounds            = NO;
+static const BOOL kDefaultShouldShowBackgroundView      = NO;
+static const UIEdgeInsets kDefaultBackgroundInsets      = {0, 0, 0, 0};
 static const NSInteger kUnionCount = 20;
 
 NSString *const SCCollectionElementKindSectionHeader = @"SCCollectionElementKindSectionHeader";
 NSString *const SCCollectionElementKindSectionFooter = @"SCCollectionElementKindSectionFooter";
 NSString *const SCCollectionElementKindSectionBackgroundView = @"SCCollectionElementKindSectionBackgroundView";
-
-@interface SCPinHeader : NSObject
-
-@property (nonatomic, strong) UICollectionViewLayoutAttributes *attributes;
-@property (nonatomic, assign) CGFloat startY;
-@property (nonatomic, assign) CGFloat endY;
-@property (nonatomic, assign) CGFloat y;
-@property (nonatomic, assign) CGRect rect;
-
-@end
-
-@implementation SCPinHeader
-
-- (void)setY:(CGFloat)y {
-    if (_y != y) {
-        _y = y;
-        CGRect frame = self.attributes.frame;
-        frame.origin.y = y;
-        self.attributes.frame = frame;
-    }
-}
-
-@end
-
-@interface SCSectionBackgroundView : UICollectionReusableView
-
-@end
-
-@implementation SCSectionBackgroundView
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    if (self = [super initWithFrame:frame]) {
-        self.backgroundColor = [UIColor redColor];
-    }
-    return self;
-}
-
-@end
 
 @interface SCCollectionViewFlowLayout()
 
@@ -330,6 +293,7 @@ NSString *const SCCollectionElementKindSectionBackgroundView = @"SCCollectionEle
 }
 
 - (void)layoutPinHeader:(SCPinHeader *)pinHeader offsetY:(CGFloat)offsetY {
+    offsetY += self.sectionHeadersPinToVisibleBoundsInsetTop;
     if ([self.delegate respondsToSelector:@selector(collectionView:layout:didChangePinHeaderStatus:inSection:)]) {
         if (offsetY <= pinHeader.startY || offsetY >= pinHeader.endY) {
             if (pinHeader.y > pinHeader.startY && pinHeader.y < pinHeader.endY) {

@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		250563ED1C58ABC000611D2C /* SCCollectionReusableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 250563EB1C58ABC000611D2C /* SCCollectionReusableView.m */; };
 		250563EE1C58ABC000611D2C /* SCCollectionReusableView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 250563EC1C58ABC000611D2C /* SCCollectionReusableView.xib */; };
+		2584A8061CC0BDE800F46DAB /* SCPinHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 2584A8031CC0BDE800F46DAB /* SCPinHeader.m */; };
+		2584A8071CC0BDE800F46DAB /* SCSectionBackgroundView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2584A8051CC0BDE800F46DAB /* SCSectionBackgroundView.m */; };
 		258CEA2E1C522E7400BBBBFA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 258CEA2D1C522E7400BBBBFA /* main.m */; };
 		258CEA311C522E7400BBBBFA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 258CEA301C522E7400BBBBFA /* AppDelegate.m */; };
 		258CEA341C522E7400BBBBFA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 258CEA331C522E7400BBBBFA /* ViewController.m */; };
@@ -22,6 +24,10 @@
 		250563EA1C58ABC000611D2C /* SCCollectionReusableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCCollectionReusableView.h; sourceTree = "<group>"; };
 		250563EB1C58ABC000611D2C /* SCCollectionReusableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCCollectionReusableView.m; sourceTree = "<group>"; };
 		250563EC1C58ABC000611D2C /* SCCollectionReusableView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SCCollectionReusableView.xib; sourceTree = "<group>"; };
+		2584A8021CC0BDE800F46DAB /* SCPinHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCPinHeader.h; sourceTree = "<group>"; };
+		2584A8031CC0BDE800F46DAB /* SCPinHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCPinHeader.m; sourceTree = "<group>"; };
+		2584A8041CC0BDE800F46DAB /* SCSectionBackgroundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SCSectionBackgroundView.h; sourceTree = "<group>"; };
+		2584A8051CC0BDE800F46DAB /* SCSectionBackgroundView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SCSectionBackgroundView.m; sourceTree = "<group>"; };
 		258CEA291C522E7400BBBBFA /* SCCollectionViewFlowLayout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SCCollectionViewFlowLayout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		258CEA2D1C522E7400BBBBFA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		258CEA2F1C522E7400BBBBFA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -96,6 +102,10 @@
 			children = (
 				258CEA441C522EF500BBBBFA /* SCCollectionViewFlowLayout.h */,
 				258CEA451C522EF500BBBBFA /* SCCollectionViewFlowLayout.m */,
+				2584A8021CC0BDE800F46DAB /* SCPinHeader.h */,
+				2584A8031CC0BDE800F46DAB /* SCPinHeader.m */,
+				2584A8041CC0BDE800F46DAB /* SCSectionBackgroundView.h */,
+				2584A8051CC0BDE800F46DAB /* SCSectionBackgroundView.m */,
 			);
 			path = SCCollectionViewFlowLayout;
 			sourceTree = "<group>";
@@ -173,7 +183,9 @@
 			files = (
 				258CEA341C522E7400BBBBFA /* ViewController.m in Sources */,
 				250563ED1C58ABC000611D2C /* SCCollectionReusableView.m in Sources */,
+				2584A8061CC0BDE800F46DAB /* SCPinHeader.m in Sources */,
 				258CEA311C522E7400BBBBFA /* AppDelegate.m in Sources */,
+				2584A8071CC0BDE800F46DAB /* SCSectionBackgroundView.m in Sources */,
 				258CEA461C522EF500BBBBFA /* SCCollectionViewFlowLayout.m in Sources */,
 				258CEA2E1C522E7400BBBBFA /* main.m in Sources */,
 			);
